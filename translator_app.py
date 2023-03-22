@@ -70,14 +70,18 @@ class App:
         self.text.see(tk.END)
         self.text.configure(state='disabled')
 
-COMBINATION = {keyboard.Key.cmd, keyboard.Key.ctrl, keyboard.KeyCode.from_char('t')}
+COMBINATION_SCREENSHOT = {keyboard.Key.cmd, keyboard.Key.ctrl, keyboard.KeyCode.from_char('s')}
+COMBINATION_CLIPBOARD = {keyboard.Key.cmd, keyboard.Key.ctrl, keyboard.KeyCode.from_char('c')}
 current_keys = set()
 
 def on_key_press(key):
-    if key in COMBINATION:
+    if key in COMBINATION_SCREENSHOT or key in COMBINATION_CLIPBOARD:
         current_keys.add(key)
-        if all(k in current_keys for k in COMBINATION):
-            on_hotkey()
+
+        if all(k in current_keys for k in COMBINATION_SCREENSHOT):
+            on_hotkey_screenshot()
+        elif all(k in current_keys for k in COMBINATION_CLIPBOARD):
+            on_hotkey_clipboard()
 
 def on_key_release(key):
     if key in current_keys:
@@ -86,6 +90,33 @@ def on_key_release(key):
 def hotkey_listener():
     with keyboard.Listener(on_press=on_key_press, on_release=on_key_release) as listener:
         listener.join()
+
+def on_hotkey_screenshot():
+    screenshot_path = capture_screen()
+    text = ocr_image(screenshot_path)
+    language = detect_language(text)
+
+    if language != 'en':
+        translated_text = translate_text(text)
+    else:
+        translated_text = text
+
+    app.add_translation(screenshot_path, translated_text)
+
+def on_hotkey_clipboard():
+    clipboard_text = pyperclip.paste().strip()
+    
+    if clipboard_text:
+        text = clipboard_text
+        screenshot_path = "Clipboard"
+        language = detect_language(text)
+
+        if language != 'en':
+            translated_text = translate_text(text)
+        else:
+            translated_text = text
+
+        app.add_translation(screenshot_path, translated_text)
 
 if __name__ == "__main__":
     root = tk.Tk()
