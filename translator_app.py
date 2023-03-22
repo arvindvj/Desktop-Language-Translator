@@ -6,6 +6,9 @@ from PIL import ImageGrab
 import tkinter as tk
 from tkinter import filedialog
 from pynput import keyboard
+import threading
+import textwrap
+import pyperclip
 
 # Configure tesseract path
 pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract' # Update this path according to your tesseract installation path
@@ -29,8 +32,15 @@ def translate_text(text, target_language='en'):
     return translated_text.text
 
 def on_hotkey():
-    screenshot_path = capture_screen()
-    text = ocr_image(screenshot_path)
+    clipboard_text = pyperclip.paste().strip()
+    
+    if clipboard_text:
+        text = clipboard_text
+        screenshot_path = "Clipboard"
+    else:
+        screenshot_path = capture_screen()
+        text = ocr_image(screenshot_path)
+
     language = detect_language(text)
 
     if language != 'en':
@@ -47,13 +57,18 @@ class App:
         self.frame = tk.Frame(self.root)
         self.frame.pack()
 
-        self.listbox = tk.Listbox(self.frame, width=100, height=20)
-        self.listbox.pack()
+        self.text = tk.Text(self.frame, width=100, height=20, wrap=tk.WORD)
+        self.text.pack()
+        self.text.configure(state='disabled')
 
     def add_translation(self, screenshot_path, translated_text):
-        entry = f"{screenshot_path}: {translated_text}"
-        self.listbox.insert(tk.END, entry)
-        self.listbox.see(tk.END)
+        wrapped_text = textwrap.fill(translated_text, 80)
+        entry = f"{screenshot_path}:\n{wrapped_text}\n\n"
+        
+        self.text.configure(state='normal')
+        self.text.insert(tk.END, entry)
+        self.text.see(tk.END)
+        self.text.configure(state='disabled')
 
 COMBINATION = {keyboard.Key.cmd, keyboard.Key.ctrl, keyboard.KeyCode.from_char('t')}
 current_keys = set()
@@ -68,10 +83,15 @@ def on_key_release(key):
     if key in current_keys:
         current_keys.remove(key)
 
+def hotkey_listener():
+    with keyboard.Listener(on_press=on_key_press, on_release=on_key_release) as listener:
+        listener.join()
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
     
-    with keyboard.Listener(on_press=on_key_press, on_release=on_key_release) as listener:
-        root.mainloop()
-        listener.join()
+    hotkey_thread = threading.Thread(target=hotkey_listener, daemon=True)
+    hotkey_thread.start()
+
+    root.mainloop()
