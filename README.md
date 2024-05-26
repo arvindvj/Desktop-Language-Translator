@@ -1,9 +1,6 @@
-pip3 install pytesseract langdetect googletrans==4.0.0-rc1 opencv-python
+Pre-req:
+pip install python-docx googletrans==4.0.0-rc1 pdfplumber fpdf
 
-brew install tesseract
+Packaging the application: 
+pyinstaller --onefile --windowed languagetranslate.py
 
-brew info tesseract
-
-pip3 install keyboard
-
-pip3 install pynput
