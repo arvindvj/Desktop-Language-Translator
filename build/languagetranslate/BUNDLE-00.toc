@@ -1,0 +1,3 @@
+([('languagetranslate',
+   '/Users/Arvind.Vidyashankar/LanguageTranslate/dist/languagetranslate',
+   'EXECUTABLE')],)
