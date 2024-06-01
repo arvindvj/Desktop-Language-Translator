@@ -34,8 +34,4 @@ def translate_document(input_file, output_file, src_lang='en', dest_lang='kn', c
 if __name__ == "__main__":
     input_file = 'input.docx'
     output_file = 'output.docx'
-<<<<<<< HEAD
     translate_document(input_file, output_file, src_lang='kn', dest_lang='en')
-=======
-    translate_document(input_file, output_file)
->>>>>>> 131ded5 (English to Kannada)

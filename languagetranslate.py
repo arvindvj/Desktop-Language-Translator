@@ -16,7 +16,6 @@ class TranslationApp:
         
         self.output_btn = tk.Button(root, text="Select Output File", command=self.select_output_file)
         self.output_btn.pack(pady=5)
-<<<<<<< HEAD
 
         self.src_lang_label = tk.Label(root, text="Select Source Language")
         self.src_lang_label.pack(pady=5)
@@ -29,8 +28,6 @@ class TranslationApp:
         self.dest_lang_var = tk.StringVar(value='kn')
         self.dest_lang_menu = tk.OptionMenu(root, self.dest_lang_var, 'kn', 'en')
         self.dest_lang_menu.pack(pady=5)
-=======
->>>>>>> 131ded5 (English to Kannada)
         
         self.translate_btn = tk.Button(root, text="Translate", command=self.translate)
         self.translate_btn.pack(pady=20)
@@ -55,15 +52,10 @@ class TranslationApp:
         if not self.input_file or not self.output_file:
             messagebox.showerror("Error", "Please select both input and output files.")
             return
-<<<<<<< HEAD
         src_lang = self.src_lang_var.get()
         dest_lang = self.dest_lang_var.get()
         try:
             translate_document(self.input_file, self.output_file, src_lang=src_lang, dest_lang=dest_lang)
-=======
-        try:
-            translate_document(self.input_file, self.output_file)
->>>>>>> 131ded5 (English to Kannada)
             messagebox.showinfo("Success", "Translation completed successfully!")
         except Exception as e:
             messagebox.showerror("Translation Failed", f"Translation failed: {str(e)}")
